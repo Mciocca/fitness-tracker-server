@@ -1,17 +1,18 @@
-import express from 'express';
+import * as express from 'express';
 import 'reflect-metadata';
+import { createConnection } from 'typeorm';
 import routes from './config/routes';
 
-const app = express();
-const port = 3000;
+createConnection().then(() => {
+  const app = express();
+  const port = 3000;
 
-app.use(routes);
+  app.use(routes);
 
-app.listen(port, err => { 
-  if (err) { 
-    return console.error(err);
-  }
-  return console.log(`server is listening on ${port}`);
-});
-
-export default app;
+  app.listen(port, err => {
+    if (err) {
+      return console.error(err);
+    }
+    return console.log(`server is listening on ${port}`);
+  });
+}).catch(error => console.log(error));

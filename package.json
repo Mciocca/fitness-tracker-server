@@ -6,7 +6,7 @@
    "private": true,
    "main": "dist/app.js",
    "scripts": {
-      "start": "ts-node src/index.ts",
+      "start": "ts-node src/app.ts",
       "dev": "nodemon",
       "test": "echo \"Error: no test specified\" && exit 1"
    },
@@ -21,6 +21,8 @@
    "dependencies": {
       "express": "^4.17.1",
       "global": "^4.4.0",
-      "pg": "^7.12.1"
+      "pg": "^7.3.0",
+      "reflect-metadata": "^0.1.10",
+      "typeorm": "0.2.20"
    }
 }
