@@ -5,4 +5,4 @@ node_modules/
 build/
 tmp/
 temp/
-.yarn-error.log
+yarn-error.log
