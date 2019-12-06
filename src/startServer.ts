@@ -5,12 +5,11 @@ import path from 'path';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
-import flash from 'connect-flash';
+import csurf from 'csurf';
 import { createTypeOrmConnection } from './config/createTypeOrmConnection';
 
 import 'reflect-metadata';
 // routes
-import HomeRoutes from './routes/homeRoutes';
 import AuthRoutes from './routes/authRoutes';
 
 export const startServer = async () => {
@@ -23,12 +22,10 @@ export const startServer = async () => {
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(bodyParser.json());
-  app.use(flash());
   app.use(cookieParser());
-
   // routes
-  app.use(HomeRoutes);
   app.use(AuthRoutes);
+  app.use(csurf({ cookie: true }));
 
   app.set('view engine', 'ejs');
 
@@ -39,6 +36,5 @@ export const startServer = async () => {
     app.emit('appStarted');
     return console.log(`server is listening on ${port}`);
   });
-
   return { app, server };
 };
