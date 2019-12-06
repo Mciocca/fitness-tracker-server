@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import passport from 'passport';
 import passportJWT from 'passport-jwt';
 import passportLocal from 'passport-local';
@@ -16,7 +15,6 @@ passport.use('login',
     usernameField: 'email',
   }, async (email: string, password: string, done) => {
     const user = await User.findOne({ email });
-
     if (!user) {
      return done(null, false, { message: 'Failed to login' });
     }

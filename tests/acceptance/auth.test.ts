@@ -30,7 +30,7 @@ describe('auth and user creation', () => {
   });
 
   describe('creating a new user', () => {
-    it('succesfully creates a new user and redirects to login page', async () => {
+    it('succesfully creates a new user', async () => {
       return agent.post('/registration')
         .send({
             email: 'cat@dog.com',
@@ -38,9 +38,11 @@ describe('auth and user creation', () => {
             lastName:  'dog',
             password: 'catdog',
         })
-        .expect(302)
-        .then(async () => {
+        .expect(201)
+        .then(async (res) => {
           const user = await User.findOne({email: 'cat@dog.com'});
+          const [token] = res.headers['set-cookie'];
+          expect(token).include('jwt=');
           expect(user.email).to.eq('cat@dog.com');
         });
     });
@@ -57,9 +59,8 @@ describe('auth and user creation', () => {
             lastName:  'dog',
             password: 'catdog',
         })
-        .expect(302)
+        .expect(400)
         .then(async (res) => {
-          expect(res.header[LOCATION_HEADER]).to.include('/registration');
           expect(await User.find({ email: user.email })).to.have.length(1);
         });
     });
@@ -72,9 +73,8 @@ describe('auth and user creation', () => {
             lastName:  'dog',
             password: 'catdog',
         })
-        .expect(302)
+        .expect(400)
         .then(async (res) => {
-          expect(res.header[LOCATION_HEADER]).to.include('/registration');
           expect(await User.find({ email: 'cat' })).to.have.length(0);
         });
     });
@@ -87,9 +87,8 @@ describe('auth and user creation', () => {
             lastName:  'dog',
             password: '',
         })
-        .expect(302)
+        .expect(400)
         .then(async (res) => {
-          expect(res.header[LOCATION_HEADER]).to.include('/registration');
           expect(await User.find({ email: 'cat' })).to.have.length(0);
         });
     });
@@ -102,9 +101,8 @@ describe('auth and user creation', () => {
           lastName:  'dog',
           password: 'cat',
         })
-        .expect(302)
+        .expect(400)
         .then(async (res) => {
-          expect(res.header[LOCATION_HEADER]).to.include('/registration');
           expect(await User.find({ email: 'cat@dog.com' })).to.have.length(0);
         });
     });
@@ -117,9 +115,8 @@ describe('auth and user creation', () => {
           lastName:  'dog',
           password: 'cat',
         })
-        .expect(302)
+        .expect(400)
         .then(async (res) => {
-          expect(res.header[LOCATION_HEADER]).to.include('/registration');
           expect(await User.find({ email: 'cat@dog.com' })).to.have.length(0);
         });
     });
@@ -132,9 +129,8 @@ describe('auth and user creation', () => {
             lastName:  '',
             password: 'cat',
         })
-        .expect(302)
+        .expect(400)
         .then(async (res) => {
-          expect(res.header[LOCATION_HEADER]).to.include('/registration');
           expect(await User.find({ email: 'cat' })).to.have.length(0);
         });
     });
@@ -148,7 +144,7 @@ describe('auth and user creation', () => {
       await user.save();
     });
 
-    it('sets the jwt header', async () => {
+    it('sets the jwt cookie', async () => {
       return agent.post('/login')
         .send({
           email: user.email,
@@ -177,19 +173,15 @@ describe('auth and user creation', () => {
 
     before(async () => {
       app.get('/protected-for-testing', passport.authenticate('jwt', {
-        failureRedirect: '/login',
         session: false,
       }), (req, res) => {
         res.send(greeting);
       });
     });
 
-    it('redirects a visitor without a valid jwt token', () => {
+    it('returns 401 when visitor doesn\'t have a valid token', () => {
       return agent.get('/protected-for-testing')
-      .expect(302)
-      .then(res => {
-        expect(res.header[LOCATION_HEADER]).to.include('/login');
-      });
+      .expect(401);
     });
 
     it('allows someone with a valid jwt to view the page', async () => {

@@ -12,3 +12,13 @@ export const htmlValidationErrors = (errors: ValidationError[]): string => {
 
   return errorString + '</ul>';
 };
+
+export const arrayValidationErrors = (errors: ValidationError[]): string[] => {
+  const arr = [];
+
+  errors.forEach(error => {
+    Object.keys(error.constraints).forEach(key => arr.push(error.constraints[key]));
+  });
+
+  return arr;
+};

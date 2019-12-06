@@ -1,18 +1,9 @@
 import { Router } from 'express';
-import passport from '../config/passport';
 import AuthController from '../controllers/authController';
 const router = Router();
 
-router.route('/login')
-      .get(AuthController.login)
-      .post(passport.authenticate('login', {
-        failureFlash: true,
-        failureRedirect: '/login',
-        session: false,
-      }), AuthController.authenticate);
+router.post('/login', AuthController.authenticate);
 
-router.route('/registration')
-      .get(AuthController.new)
-      .post(AuthController.create);
+router.post('/registration', AuthController.create);
 
 export default router;

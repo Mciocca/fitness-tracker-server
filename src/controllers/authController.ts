@@ -1,20 +1,23 @@
 import { validateOrReject } from 'class-validator';
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import passport from 'passport';
 import User from '../entity/User';
-import { htmlValidationErrors } from '../utils/validationErrorFormatter';
+import { serializeUser } from '../serializers/User';
+import { arrayValidationErrors } from '../utils/validationErrorFormatter';
 
+const createJWT = (user: User) => jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '30 days'});
 export default class AuthController {
-  public static login(req: Request, res: Response): void {
-    res.render('authentication/login', {
-      message: req.flash(),
-    });
-  }
-
   public static authenticate(req: any, res: Response): void {
-    const token = jwt.sign({ userId: req.user.id }, process.env.JWT_SECRET, { expiresIn: '30 days'});
-    res.cookie('jwt', token, { httpOnly: true, sameSite: true });
-    res.redirect('/');
+    passport.authenticate('login', { session: false}, (err, user) => {
+      if (!user) {
+        res.status(401);
+        return res.json({ errors: ['Could not login with given credentials'] });
+      }
+      res.cookie('jwt', createJWT(user), { httpOnly: true, sameSite: true });
+      res.status(200);
+      res.json({ user: serializeUser(user) });
+    })(req, res);
   }
 
   public static new(req: Request, res: Response): void {
@@ -28,8 +31,8 @@ export default class AuthController {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      req.flash('error', 'Email already exists');
-      res.redirect('/registration');
+      res.status(400);
+      res.json({ errors: ['Email already exists'] });
     } else {
       const user = User.create({ firstName, lastName, email });
       user.password = password;
@@ -37,18 +40,17 @@ export default class AuthController {
       try {
         await validateOrReject(user);
       } catch (error) {
-        const messages: string = htmlValidationErrors(error);
-        req.flash('error', messages);
-        return res.redirect('/registration');
+        res.status(400);
+        return res.json({ errors: arrayValidationErrors(error) });
       }
 
       try {
         await user.save();
-        req.flash('success', 'Account created, please sign in.');
-        res.redirect('/login');
-      } catch (e) {
-        req.flash('error', e);
-        res.redirect('/registration');
+        res.cookie('jwt', createJWT(user), { httpOnly: true, sameSite: true });
+        res.status(201);
+        res.json({ user: serializeUser(user) });
+      } catch (error) {
+        res.json({errors: ['Something went wrong, please try again.']});
       }
     }
   }
