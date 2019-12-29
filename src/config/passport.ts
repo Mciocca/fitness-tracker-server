@@ -31,7 +31,7 @@ passport.use(new JWTStrategy(
   {
     jwtFromRequest: (req): string => {
       let token: string;
-      if (req && req) {
+      if (req) {
         token = req.cookies[JWT_COOKIE];
       }
       return token;

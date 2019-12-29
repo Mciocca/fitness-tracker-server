@@ -5,28 +5,40 @@ import passport from '../../src/config/passport';
 import User from '../../src/entity/User';
 import { startServer } from '../../src/startServer';
 
-const LOCATION_HEADER = 'location';
 let server;
 let agent;
 let app;
+let db;
 
 describe('auth and user creation', () => {
   before(async () => {
-    const { app: testApp, server: testServer } = await startServer();
+    const { app: testApp, server: testServer, dbConnection } = await startServer();
+    db = dbConnection;
     app = testApp;
-    // TODO: could this cause a race condition?
-    app.on('appStarted', () => {
-      server = testServer;
-      agent = request.agent(app);
+
+    return new Promise((resolve) => {
+      app.on('appStarted', () => {
+        server = testServer;
+        agent = request.agent(app);
+        resolve();
+      });
     });
   });
 
-  afterEach(() => {
-    User.clear();
+  afterEach(async () => {
+    const users: User[] = await User.find();
+    users.forEach((user) => {
+      user.remove();
+    });
   });
 
   after(() => {
-    server.close();
+    return new Promise(async (resolve, reject) => {
+      await db.close();
+      server.close(() => {
+        return resolve();
+      });
+    });
   });
 
   describe('creating a new user', () => {
