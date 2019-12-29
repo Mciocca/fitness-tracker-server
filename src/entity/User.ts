@@ -10,12 +10,17 @@ import {
   PrimaryGeneratedColumn,
   Timestamp,
   UpdateDateColumn,
+  OneToOne,
 } from 'typeorm';
+import Profile from './Profile';
 
 @Entity()
 export default class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   public id: number;
+
+  @OneToOne(type => Profile, profile => profile.user)
+  public profile: Profile;
 
   @Column()
   @IsNotEmpty({ message: 'First name is required'})
@@ -32,9 +37,6 @@ export default class User extends BaseEntity {
   @Column({ unique: true })
   @IsEmail({}, { message: 'Email is not valid' })
   public email: string;
-
-  @Column({ nullable: true})
-  public age: number;
 
   @CreateDateColumn()
   public createdAt: Timestamp;
