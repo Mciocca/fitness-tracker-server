@@ -11,9 +11,10 @@ import { createTypeOrmConnection } from './config/createTypeOrmConnection';
 import 'reflect-metadata';
 // routes
 import AuthRoutes from './routes/authRoutes';
+import ApiV1Routes from './routes/apiV1';
 
 export const startServer = async () => {
-  await createTypeOrmConnection();
+  const dbConnection = await createTypeOrmConnection();
   const app = express();
   const port = process.env.NODE_ENV === 'test' ? 4567 : 4000;
 
@@ -26,6 +27,7 @@ export const startServer = async () => {
   // routes
   app.use(AuthRoutes);
   app.use(csurf({ cookie: true }));
+  app.use(ApiV1Routes);
 
   app.set('view engine', 'ejs');
 
@@ -36,5 +38,5 @@ export const startServer = async () => {
     app.emit('appStarted');
     return console.log(`server is listening on ${port}`);
   });
-  return { app, server };
+  return { app, server, dbConnection };
 };
