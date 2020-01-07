@@ -31,7 +31,7 @@
       "supertest": "^4.0.2",
       "ts-node": "3.3.0",
       "tslint": "^5.20.1",
-      "typescript": "3.3.3333"
+      "typescript": "3.7.2"
    },
    "dependencies": {
       "@types/csurf": "^1.9.36",
