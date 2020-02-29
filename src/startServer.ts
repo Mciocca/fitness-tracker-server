@@ -5,8 +5,8 @@ import path from 'path';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
-import csurf from 'csurf';
 import { createTypeOrmConnection } from './config/createTypeOrmConnection';
+import csurf from 'csurf';
 
 import 'reflect-metadata';
 // routes
@@ -21,12 +21,11 @@ export const startServer = async () => {
   app.set('views', path.join(`${__dirname}/views`));
   app.use(passport.initialize());
   app.use(bodyParser.json());
-  app.use(bodyParser.urlencoded({ extended: false }));
-  app.use(bodyParser.json());
   app.use(cookieParser());
+  if (process.env.NODE_ENV !== 'test') app.use(csurf({ cookie: true }));
+
   // routes
   app.use(AuthRoutes);
-  app.use(csurf({ cookie: true }));
   app.use(ApiV1Routes);
 
   app.set('view engine', 'ejs');
