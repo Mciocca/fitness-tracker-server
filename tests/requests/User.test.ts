@@ -51,7 +51,9 @@ describe('Requests to user controller', () => {
         user: {
           email: user.email,
           id: user.id,
-          name: user.fullName
+          name: user.fullName,
+          profile: null,
+          updateUrl: '/api/v1/user',
         }
       });
   });
