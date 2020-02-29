@@ -41,7 +41,7 @@ passport.use(new JWTStrategy(
   async (jwtPayload, done) => {
     let user: User;
     try {
-      user = await User.findOne({ id: jwtPayload.userId });
+      user = await User.findOne({ id: jwtPayload.userId}, { relations: ['profile']});
     } catch (e) {
       done('You must login to view this page');
     }
