@@ -1,19 +1,23 @@
 import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
 import User from './User';
 
-enum Goals {
+export enum Goals {
+  MAINTAIN = 'Maintain weight',
   GAIN = 'Gain weight',
   LOSE = 'Lose weight',
-  MAINTAIN = 'Maintain weight',
 }
 
-enum Gender {
+export enum Gender {
   MALE = 'Male',
   FEMALE = 'Female',
 }
 
 @Entity()
 export default class Profile extends BaseEntity {
+  @OneToOne(type => User, user => user.profile)
+  @JoinColumn()
+  public user: User;
+
   @PrimaryGeneratedColumn()
   public id: number;
 
@@ -35,9 +39,8 @@ export default class Profile extends BaseEntity {
   public gender: Gender;
 
   @Column({ nullable: true })
-  public weight: number;
+  public startingWeight: number;
 
-  @OneToOne(type => User, user => user.profile)
-  @JoinColumn()
-  public user: User;
+  @Column({nullable: true})
+  public height: number;
 }
