@@ -1,5 +1,11 @@
 import bcrypt from 'bcrypt';
-import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  registerDecorator,
+  ValidationOptions,
+  ValidationArguments
+} from 'class-validator';
 import {
   BaseEntity,
   BeforeInsert,
@@ -14,13 +20,42 @@ import {
 } from 'typeorm';
 import Profile from './Profile';
 
+const userPasswordValidation = (validationOptions: ValidationOptions) => {
+  return (object: object, propertyName: string) => {
+    registerDecorator({
+      name: 'userPasswordValidation',
+      target: object.constructor,
+      propertyName,
+      options: validationOptions,
+      validator: {
+        validate(value: any, args: ValidationArguments) {
+          const user = args.object as User;
+          if (user.passwordHash && !value) {
+            return true;
+          }
+
+          if (!user.passwordHash && !value) {
+            return false;
+          }
+
+          if (!user.passwordHash && value && value.length >= 6 ) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      }
+    });
+  };
+};
+
 @Entity()
 export default class User extends BaseEntity {
+  @OneToOne(type => Profile, profile => profile.user, { cascade: true })
+  public profile: Profile;
+
   @PrimaryGeneratedColumn()
   public id: number;
-
-  @OneToOne(type => Profile, profile => profile.user)
-  public profile: Profile;
 
   @Column()
   @IsNotEmpty({ message: 'First name is required'})
@@ -44,12 +79,11 @@ export default class User extends BaseEntity {
   @UpdateDateColumn()
   public updatedAt: Timestamp;
 
-  @IsNotEmpty({ message: 'Password is required'})
-  @MinLength(6, { message: 'Password must be at least 6 characters'})
+  @userPasswordValidation({ message: 'Password is required and must be at least 6 characters'})
   public password: string;
 
   @Column()
-  private passwordHash: string;
+  public passwordHash: string;
 
   private saltRounds: number = 12;
 
