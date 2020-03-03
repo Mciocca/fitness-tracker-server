@@ -8,6 +8,6 @@ router.get('/api/v1', ConfigurationController.show);
 
 router.use(passport.authenticate('jwt', { session: false }));
 router.get('/api/v1/user', UserController.show);
-router.post('/api/v1/user', UserController.update);
+router.patch('/api/v1/user', UserController.update);
 
 export default router;
