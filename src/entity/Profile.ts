@@ -1,4 +1,14 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Timestamp
+} from 'typeorm';
 import User from './User';
 
 export enum Goals {
@@ -43,4 +53,10 @@ export default class Profile extends BaseEntity {
 
   @Column({nullable: true})
   public height: number;
+
+  @CreateDateColumn()
+  public createdAt: Timestamp;
+
+  @UpdateDateColumn()
+  public updatedAt: Timestamp;
 }
