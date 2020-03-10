@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import { createTypeOrmConnection } from './config/createTypeOrmConnection';
 import csurf from 'csurf';
+import morgan from 'morgan';
 
 import 'reflect-metadata';
 // routes
@@ -22,6 +23,7 @@ export const startServer = async () => {
   app.use(passport.initialize());
   app.use(bodyParser.json());
   app.use(cookieParser());
+  app.use(morgan('dev'));
   if (process.env.NODE_ENV !== 'test') app.use(csurf({ cookie: true }));
 
   // routes
