@@ -37,6 +37,7 @@ describe('Requests to user controller', () => {
   after(() => {
     return new Promise(async (resolve, reject) => {
       // this prevents an issue where the next test starts before db is closed from previous test, causing new tests to fail and not run.
+      // TODO: find a way to standup a test server before the tests run and teardown after.
       await db.close();
       server.close(() => {
         return resolve();
@@ -50,9 +51,20 @@ describe('Requests to user controller', () => {
       .expect(200, {
         user: {
           email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
           id: user.id,
           name: user.fullName,
-          profile: null,
+          profile: {
+            options: {
+              gender: ['Male', 'Female'],
+              goals: [
+                'Maintain weight',
+                'Gain weight',
+                'Lose weight'
+              ]
+            }
+          },
           updateUrl: '/api/v1/user',
         }
       });
