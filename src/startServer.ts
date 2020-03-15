@@ -1,4 +1,3 @@
-/* tslint:disable:ordered-imports */
 import express from 'express';
 import path from 'path';
 // middleware
