@@ -17,8 +17,10 @@ import {
   Timestamp,
   UpdateDateColumn,
   OneToOne,
+  OneToMany
 } from 'typeorm';
 import Profile from './Profile';
+import Workout from './Workout';
 
 const userPasswordValidation = (validationOptions: ValidationOptions) => {
   return (object: object, propertyName: string) => {
@@ -53,6 +55,9 @@ const userPasswordValidation = (validationOptions: ValidationOptions) => {
 export default class User extends BaseEntity {
   @OneToOne(type => Profile, profile => profile.user, { cascade: true })
   public profile: Profile;
+
+  @OneToMany(type => Workout, workout => workout.user)
+  public workouts: Workout[];
 
   @PrimaryGeneratedColumn()
   public id: number;

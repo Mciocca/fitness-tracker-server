@@ -5,15 +5,20 @@ import {
   Column,
   Timestamp,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  OneToMany
 } from 'typeorm';
+import WorkoutSet from './WorkoutSet';
 
 @Entity()
 export default class Exercise extends BaseEntity {
+  @OneToMany(type => WorkoutSet, workoutSet => workoutSet.exercise)
+  public sets: WorkoutSet[];
+
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, unique: true })
   public name: string;
 
   @Column({ nullable: false })
