@@ -2,9 +2,6 @@ import bcrypt from 'bcrypt';
 import {
   IsEmail,
   IsNotEmpty,
-  registerDecorator,
-  ValidationOptions,
-  ValidationArguments
 } from 'class-validator';
 import {
   BaseEntity,
@@ -21,35 +18,7 @@ import {
 } from 'typeorm';
 import Profile from './Profile';
 import Workout from './Workout';
-
-const userPasswordValidation = (validationOptions: ValidationOptions) => {
-  return (object: object, propertyName: string) => {
-    registerDecorator({
-      name: 'userPasswordValidation',
-      target: object.constructor,
-      propertyName,
-      options: validationOptions,
-      validator: {
-        validate(value: any, args: ValidationArguments) {
-          const user = args.object as User;
-          if (user.passwordHash && !value) {
-            return true;
-          }
-
-          if (!user.passwordHash && !value) {
-            return false;
-          }
-
-          if (!user.passwordHash && value && value.length >= 6 ) {
-            return true;
-          } else {
-            return false;
-          }
-        }
-      }
-    });
-  };
-};
+import { userPasswordValidation } from './validations/UserValidations';
 
 @Entity()
 export default class User extends BaseEntity {
