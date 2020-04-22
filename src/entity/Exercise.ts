@@ -16,8 +16,17 @@ export default class Exercise extends BaseEntity {
     return this.createQueryBuilder('exercise')
                .where('exercise.name ILIKE :name', { name: `%${name}%`})
                .andWhere('exercise.muscleGroup ILIKE :group', { group: `%${muscleGroup}%`})
-               .limit(10)
+               .limit(20)
                .getMany();
+  }
+
+  public static async getMuscleGroups(): Promise<string[]> {
+    const muscleGroups = await this.createQueryBuilder('exercise')
+                                   .select('DISTINCT "muscleGroup"')
+                                   .orderBy('exercise.muscleGroup')
+                                   .getRawMany();
+
+    return muscleGroups.map((group) => group.muscleGroup);
   }
 
   @OneToMany(type => WorkoutSet, workoutSet => workoutSet.exercise)
