@@ -28,8 +28,7 @@ export default class Workout extends BaseEntity {
   public id: number;
 
   @Column()
-  @IsDefined()
-  @IsString()
+  @IsString({ message: 'Title is required'})
   public title: string;
 
   @Column({ type: 'text', nullable: true })
