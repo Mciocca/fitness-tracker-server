@@ -8,7 +8,7 @@
   "scripts": {
     "start-dev": "NODE_ENV=development node --inspect -r ts-node/register -r dotenv/config src/app.ts",
     "dev": "nodemon",
-    "test": "NODE_ENV=test mocha -r ts-node/register -r dotenv/config tests/**/*.test.ts",
+    "test": "NODE_ENV=test JWT_SECRET=secret mocha -r ts-node/register tests/**/*.test.ts",
     "test:debug": "NODE_ENV=test JWT_SECRET=secret mocha  --inspect-brk=127.0.0.1:9229  -r ts-node/register tests/**/*.test.ts"
   },
   "devDependencies": {
