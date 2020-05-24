@@ -4,7 +4,7 @@ import fs from 'fs';
 
 // This app is not being used for profit and it's hard to argue that exercises are IP, so this scraper should be fine.
 
-// This could also just save everything to one file. It's a litlte easier to spot check
+// This could also just save everything to one file. It's a little easier to spot check
 // and manually edit exercises when the files are separated by muscle group.
 const getExercises = async (muscleGroup, maxPage) => {
   const browser = await puppeteer.launch();

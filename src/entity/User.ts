@@ -2,9 +2,6 @@ import bcrypt from 'bcrypt';
 import {
   IsEmail,
   IsNotEmpty,
-  registerDecorator,
-  ValidationOptions,
-  ValidationArguments
 } from 'class-validator';
 import {
   BaseEntity,
@@ -17,42 +14,19 @@ import {
   Timestamp,
   UpdateDateColumn,
   OneToOne,
+  OneToMany
 } from 'typeorm';
 import Profile from './Profile';
-
-const userPasswordValidation = (validationOptions: ValidationOptions) => {
-  return (object: object, propertyName: string) => {
-    registerDecorator({
-      name: 'userPasswordValidation',
-      target: object.constructor,
-      propertyName,
-      options: validationOptions,
-      validator: {
-        validate(value: any, args: ValidationArguments) {
-          const user = args.object as User;
-          if (user.passwordHash && !value) {
-            return true;
-          }
-
-          if (!user.passwordHash && !value) {
-            return false;
-          }
-
-          if (!user.passwordHash && value && value.length >= 6 ) {
-            return true;
-          } else {
-            return false;
-          }
-        }
-      }
-    });
-  };
-};
+import Workout from './Workout';
+import { userPasswordValidation } from './validations/UserValidations';
 
 @Entity()
 export default class User extends BaseEntity {
   @OneToOne(type => Profile, profile => profile.user, { cascade: true })
   public profile: Profile;
+
+  @OneToMany(type => Workout, workout => workout.user)
+  public workouts: Workout[];
 
   @PrimaryGeneratedColumn()
   public id: number;
