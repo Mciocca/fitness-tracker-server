@@ -16,21 +16,21 @@ import Exercise from './Exercise';
 export default class WorkoutSet extends BaseEntity {
   public static insertMany(records: []) {
     this.createQueryBuilder()
-        .insert()
-        .into('workout_set')
-        .values(records)
-        .execute();
+      .insert()
+      .into('workout_set')
+      .values(records)
+      .execute();
   }
 
   @Column()
   public workoutId: number;
-  @ManyToOne(type => Workout, workout => workout.sets)
-  @JoinColumn({ name:  'workoutId' })
+  @ManyToOne((type) => Workout, (workout) => workout.sets)
+  @JoinColumn({ name: 'workoutId' })
   public workout: Workout;
 
   @Column()
   public exerciseId: number;
-  @ManyToOne(type => Exercise, exercise => exercise.sets, { eager: true })
+  @ManyToOne((type) => Exercise, (exercise) => exercise.sets, { eager: true })
   @JoinColumn({ name: 'exerciseId' })
   public exercise: Exercise;
 
@@ -40,7 +40,7 @@ export default class WorkoutSet extends BaseEntity {
   @Column({ default: 0 })
   public reps: number;
 
-  @Column({ default: 0})
+  @Column('decimal', { default: 0, precision: 5, scale: 2 })
   public weight: number;
 
   @CreateDateColumn()
